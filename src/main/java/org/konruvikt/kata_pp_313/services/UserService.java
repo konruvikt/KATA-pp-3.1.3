@@ -5,7 +5,6 @@ import org.konruvikt.kata_pp_313.models.Role;
 import org.konruvikt.kata_pp_313.models.User;
 import org.konruvikt.kata_pp_313.repositories.RoleRepository;
 import org.konruvikt.kata_pp_313.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,7 +12,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,7 +30,6 @@ public class UserService implements UserDetailsService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-
     public User findById(Long id){
         return userRepository.getReferenceById(id);
     }
@@ -42,10 +39,8 @@ public class UserService implements UserDetailsService {
     }
 
     public void saveUser(User user){
-        User editedOrNewUser = userRepository.findByUsername(user.getUsername());
-        editedOrNewUser.setRoles(Collections.singletonList(new Role(2L, "ROLE_USER")));
-        editedOrNewUser.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        userRepository.save(editedOrNewUser);
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
     }
 
     public void deleteById(Long id){
@@ -60,8 +55,12 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    public User findUserByUserName(String userName) {       // нужен?
+    public User findUserByUserName(String userName) {
        return findAll().stream().filter(user -> user.getUsername().equals(userName)).findAny().orElse(null);
+    }
+
+    public List<Role> listRoles() {
+        return roleRepository.findAll();
     }
 
     @PostConstruct
@@ -83,7 +82,4 @@ public class UserService implements UserDetailsService {
         userRepository.save(adminUser);
         userRepository.save(normalUser);
     }
-
-
-
 }

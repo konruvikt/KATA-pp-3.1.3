@@ -34,11 +34,11 @@ public class User implements UserDetails {
     @Column(name = "pass")
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(
             name="user_role",
-            joinColumns={@JoinColumn(name="USER_ID", referencedColumnName="id")},
-            inverseJoinColumns={@JoinColumn(name="ROLE_ID", referencedColumnName="id")})
+            joinColumns={@JoinColumn(name="USER_LOGIN", referencedColumnName="login")},
+            inverseJoinColumns={@JoinColumn(name="ROLE_NAME", referencedColumnName="name")})
     private List<Role> roles;
 
     public User() {
@@ -91,6 +91,10 @@ public class User implements UserDetails {
         return login;
     }
 
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
     @Override
     public String getUsername() {
         return getLogin();
@@ -116,8 +120,6 @@ public class User implements UserDetails {
     public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
-
-    //
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

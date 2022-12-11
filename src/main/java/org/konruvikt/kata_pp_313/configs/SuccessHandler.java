@@ -13,8 +13,7 @@ import java.io.IOException;
 import java.util.Set;
 
 @Component
-public class SuccessUserHandler implements AuthenticationSuccessHandler {
-    // Spring Security использует объект Authentication, пользователя авторизованной сессии.
+public class SuccessHandler implements AuthenticationSuccessHandler {
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest,
@@ -24,8 +23,8 @@ public class SuccessUserHandler implements AuthenticationSuccessHandler {
         if (roles.contains("ROLE_ADMIN")) {
             redirectStrategy.sendRedirect(httpServletRequest, httpServletResponse, "/admin");
         } else if (roles.contains("ROLE_USER"))
-            httpServletResponse.sendRedirect("/user");
+            redirectStrategy.sendRedirect(httpServletRequest, httpServletResponse, "/user");
         else
-            httpServletResponse.sendRedirect("/");
+            httpServletResponse.sendRedirect("/login");
     }
 }
