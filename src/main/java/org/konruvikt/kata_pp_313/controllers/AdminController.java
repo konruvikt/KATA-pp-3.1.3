@@ -22,9 +22,7 @@ public class AdminController {
 
     @GetMapping
     public String findAll(Model model){
-        List<Role> listRoles = userService.listRoles();
         model.addAttribute("users", userService.findAll());
-        model.addAttribute("listRoles", listRoles);
         return "user-list";
     }
 
@@ -47,16 +45,16 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-//    @GetMapping("/user-update/{id}")
-//    public String updateUserForm(@PathVariable("id") Long id, Model model){
-//        List<Role> listRoles = userService.listRoles();
-//        model.addAttribute("user", userService.findById(id));
-//        model.addAttribute("listRoles", listRoles);
-//        return "user-update";
-//    }
+    @GetMapping("/user-update/{id}")
+    public String updateUserForm(@PathVariable("id") Long id, Model model){
+        List<Role> listRoles = userService.listRoles();
+        model.addAttribute("user", userService.findById(id));
+        model.addAttribute("listRoles", listRoles);
+        return "user-list";  //"user-update"
+    }
 
-    @PostMapping("/user-update")
-    public String updateUser(@ModelAttribute("user") User user){
+    @PatchMapping("/user-update")
+    public String updateUser(User user){
         userService.saveUser(user);
         return "redirect:/admin";
     }

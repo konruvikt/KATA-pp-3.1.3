@@ -8,7 +8,9 @@
           rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
           crossorigin="anonymous">
-<!--    <script type="text/javascript" th:src="@{/main.js}" src="../static/main.js"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -47,56 +49,75 @@
             <td th:text = "${user.login}"></td>
             <td th:text = "${user.roles}"></td>
             <td>
-<!--                -->
-                <button class="btn btn-warning" data-bs-toggle="modal" th:attr="data-bs-target='#eBtn'+${user.id}">Edit</button>
-<!---->
-                <div class="modal fade"  th:id="eBtn+${user.id}" tabindex="-1"
+                <button class="btn btn-warning" data-bs-toggle="modal" th:data-bs-target="${'#eBtn'+ user.id}"
+                        th:data-row="${user}">Edit</button>
+                <div class="modal fade"  th:id="${'eBtn'+ user.id}" tabindex="-1"
                      aria-labelledby="edit" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h1 class="modal-title fs-5" id="edit">Edit user</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button type="button" class="btn-close"
+                                        data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div class="modal-body">
-                                <form th:action="@{/admin/user-update}" th:method="post">
+                            <form th:method="PATCH" th:action="@{/admin/user-update}" th:object="${user}" >
+                                <div class="modal-body">
                                     <div class="mb-3">
                                         <label for="idEdit" class="col-form-label">ID</label>
                                         <input type="text"
-                                               th:field="*{user.id}"
-                                               class="form-control" id="idEdit"/>
+                                               th:value="${user.id}" name = "id"
+                                               class="form-control" id="idEdit" readonly/>
                                     </div>
                                     <div class="mb-3">
                                         <label for="nameEdit" class="col-form-label">Name</label>
-                                        <input type="text" th:field="*{user.name}" class="form-control" id="nameEdit" required minlength="2" maxlength="20"/>
+                                        <input type="text"
+                                               th:value="${user.name}" name = "name"
+                                               class="form-control" id="nameEdit"
+                                               required minlength="2" maxlength="20"/>
                                     </div>
                                     <div class="mb-3">
                                         <label for="lastNameEdit" class="col-form-label">Lastname</label>
-                                        <input type="text" th:field="*{user.lastName}" class="form-control" id="lastNameEdit" required minlength="2" maxlength="20"/>
+                                        <input type="text"
+                                               th:value="${user.lastName}" name = "lastName"
+                                               class="form-control" id="lastNameEdit"
+                                               required minlength="2" maxlength="20"/>
                                     </div>
+<!--                                    добавить ограничение-->
                                     <div class="mb-3">
                                         <label for="ageEdit" class="col-form-label">Age</label>
-                                        <input type="text" th:field="*{user.age}" class="form-control" id="ageEdit"/>
+                                        <input type="number"
+                                               th:value="${user.age}" name = "age"
+                                               class="form-control" id="ageEdit"/>
                                     </div>
-                                    <!--                        hide login-->
                                     <div class="mb-3">
                                         <label for="loginEdit" class="col-form-label">Login</label>
-                                        <input type="text" th:field="*{user.login}" class="form-control" id="loginEdit"/>
+                                        <input type="text"
+                                               th:value="${user.login}" name = "login"
+                                               class="form-control" id="loginEdit" readonly/>
                                     </div>
                                     <div class="mb-3">
                                         <label for="passEdit" class="col-form-label">Password</label>
-                                        <input type="password" th:field="*{user.password}" class="form-control" id="passEdit" required minlength="2" maxlength="20"/>
+                                        <input type="password"
+                                               th:value="${user.password}" name = "password"
+                                               class="form-control" id="passEdit"
+                                               required minlength="2" maxlength="20"/>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="roleEdit" class="col-form-label">Role</label>
-                                        <input type="text" th:field="*{user.roles}" class="form-control" id="roleEdit"/>
+                                        <label class="container-fluid " for="rolesEdit">Role</label>
+                                        <select id="rolesEdit" class="form-select col-md-5"
+                                                th:value="${user.roles}" name="roles"
+                                                multiple="" size="2" >
+                                            <option value="1">ADMIN</option>
+                                            <option value="2">USER</option>
+                                        </select>
                                     </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <input type="submit" class="btn btn-primary" value="Edit"/>
-                            </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                    <input type="submit" class="btn btn-primary" value="Edit"/>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -104,21 +125,13 @@
             <td>
                 <a type="button" class="btn btn-danger" th:href="@{admin/delete/{id}(id=${user.id})}">Delete</a>
             </td>
-
         </tr>
         </tbody>
     </table>
-
     <br>
-
     <a type="button" class="btn btn-primary" href="/admin/user-create">Add user</a>
-
     <br><br><br>
-
     <a type="button" class="btn btn-success" href="/user">My home page</a>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-
 </body>
 </html>
