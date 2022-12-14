@@ -6,18 +6,22 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
+@NamedEntityGraph(
+        name = "user-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("roles")})
 public class User implements UserDetails {
 
     @Column(name = "id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
 
     @Column(name = "name")
     private String name;
@@ -34,18 +38,23 @@ public class User implements UserDetails {
     @Column(name = "pass")
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name="user_role",
-            joinColumns={@JoinColumn(name="USER_LOGIN", referencedColumnName="login")},
-            inverseJoinColumns={@JoinColumn(name="ROLE_NAME", referencedColumnName="name")})
-    private List<Role> roles;
+            name="users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
+
+    public void addRole(Role role) {
+        roles.add(role);
+    }
 
     public User() {
 
     }
 
-    public User(Long id, String name, String lastName, Byte age, String login, String password, List<Role> roles) {
+    public User(Long id, String name, String lastName, Byte age, String login, String password, Set<Role> roles) {
         this.id = id;
         this.name = name;
         this.lastName = lastName;
@@ -113,11 +122,11 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public List<Role> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 

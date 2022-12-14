@@ -3,7 +3,6 @@ package org.konruvikt.kata_pp_313.models;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -16,9 +15,6 @@ public class Role implements GrantedAuthority {
 
     @Column
     private String name;
-
-    @ManyToMany(mappedBy = "roles")
-    private List<User> users;
 
     public Role() {
     }
@@ -48,14 +44,6 @@ public class Role implements GrantedAuthority {
         this.name = name;
     }
 
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
-
     @Override
     public String getAuthority() {
         return getName();
@@ -63,9 +51,7 @@ public class Role implements GrantedAuthority {
 
     @Override
     public String toString() {
-        return "Role{" +
-                "name='" + name + '\'' +
-                '}';
+        return name;
     }
 
     @Override
@@ -73,11 +59,11 @@ public class Role implements GrantedAuthority {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Role role = (Role) o;
-        return Objects.equals(id, role.id) && Objects.equals(name, role.name) && Objects.equals(users, role.users);
+        return Objects.equals(id, role.id) && Objects.equals(name, role.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, users);
+        return Objects.hash(id, name);
     }
 }

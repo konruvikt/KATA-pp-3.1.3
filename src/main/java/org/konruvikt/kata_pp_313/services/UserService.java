@@ -10,12 +10,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
+@Transactional
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -67,17 +67,24 @@ public class UserService implements UserDetailsService {
     private void postConstruct() {
         Role admin = new Role(1L, "ROLE_ADMIN");
         Role user = new Role(2L, "ROLE_USER");
+        roleRepository.saveAll(List.of(admin, user));
 
-        List<Role> rolesOfAdmin = new ArrayList<>();
-        List<Role> rolesOfUser = new ArrayList<>();
+        User adminUser = new User();
+        adminUser.setName("name1");
+        adminUser.setLastName("lastname1");
+        adminUser.setAge((byte) 33);
+        adminUser.setLogin("admin");
+        adminUser.setPassword(bCryptPasswordEncoder.encode("admin1"));
+        adminUser.addRole(admin);
+        adminUser.addRole(user);
 
-        Collections.addAll(rolesOfAdmin, admin, user);
-        Collections.addAll(rolesOfUser, user);
-
-        User adminUser = new User(1L, "name1", "lastname1",
-                (byte) 1, "admin", bCryptPasswordEncoder.encode("admin1"), rolesOfAdmin);
-        User normalUser = new User(2L, "name2", "lastname2",
-                (byte) 2, "user", bCryptPasswordEncoder.encode("user1"), rolesOfUser);
+        User normalUser = new User();
+        normalUser.setName("name2");
+        normalUser.setLastName("lastname2");
+        normalUser.setAge((byte) 44);
+        normalUser.setLogin("user");
+        normalUser.setPassword(bCryptPasswordEncoder.encode("user1"));
+        normalUser.addRole(user);
 
         userRepository.save(adminUser);
         userRepository.save(normalUser);
