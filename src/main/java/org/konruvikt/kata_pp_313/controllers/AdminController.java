@@ -1,13 +1,12 @@
 package org.konruvikt.kata_pp_313.controllers;
 
-import org.konruvikt.kata_pp_313.models.Role;
 import org.konruvikt.kata_pp_313.models.User;
 import org.konruvikt.kata_pp_313.services.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/admin")
@@ -21,16 +20,16 @@ public class AdminController {
 
 
     @GetMapping
-    public String findAll(Model model){
+    public String findAll(Model model, Principal principal){
         model.addAttribute("users", userService.findAll());
+        User princ = userService.findUserByUserName(principal.getName());
+        model.addAttribute("princ", princ);
         return "user-list";
     }
 
     @GetMapping("/user-create")
-    public String createUserForm(@ModelAttribute("user") User user, Model model){
-        List<Role> listRoles = userService.listRoles();
-        model.addAttribute("listRoles", listRoles);
-        return "user-create";
+    public String createUserForm(@ModelAttribute("user") User user){
+        return "user-list";
     }
 
     @PostMapping("/user-create")
@@ -40,17 +39,21 @@ public class AdminController {
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteUser(@PathVariable("id") Long id){
+    public String deleteUserForm(@PathVariable("id") Long id, Model model){
+        model.addAttribute("user", userService.findById(id));
+        return "user-list";
+    }
+
+    @DeleteMapping("/user-delete")
+    public String deleteUser(Long id) {
         userService.deleteById(id);
         return "redirect:/admin";
     }
 
     @GetMapping("/user-update/{id}")
     public String updateUserForm(@PathVariable("id") Long id, Model model){
-        List<Role> listRoles = userService.listRoles();
         model.addAttribute("user", userService.findById(id));
-        model.addAttribute("listRoles", listRoles);
-        return "user-list";  //"user-update"
+        return "user-list";
     }
 
     @PatchMapping("/user-update")

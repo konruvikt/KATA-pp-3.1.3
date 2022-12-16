@@ -12,7 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
 
 @Service
 @Transactional
@@ -76,7 +76,6 @@ public class UserService implements UserDetailsService {
         adminUser.setLogin("admin");
         adminUser.setPassword(bCryptPasswordEncoder.encode("admin1"));
         adminUser.addRole(admin);
-        adminUser.addRole(user);
 
         User normalUser = new User();
         normalUser.setName("name2");
