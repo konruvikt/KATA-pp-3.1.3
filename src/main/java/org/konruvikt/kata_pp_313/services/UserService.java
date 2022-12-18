@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -38,6 +37,7 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
+    @Transactional
     public void saveUser(User user){
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
@@ -57,10 +57,6 @@ public class UserService implements UserDetailsService {
 
     public User findUserByUserName(String userName) {
        return findAll().stream().filter(user -> user.getUsername().equals(userName)).findAny().orElse(null);
-    }
-
-    public List<Role> listRoles() {
-        return roleRepository.findAll();
     }
 
     @PostConstruct
